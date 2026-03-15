@@ -1,0 +1,4 @@
+symbol,side,entry_time,exit_time,entry_price,exit_price,quantity,pnl,reason,entry_order_id,exit_order_id
+AAPL,LONG,2026-03-02T09:36:00,2026-03-02T09:37:00,25.42,25.56,196,26.44,take_profit,paper-e43e1b447a1640eebd,paper-4adc56697bdf4b718d
+AAPL,LONG,2026-03-02T09:37:00,2026-03-02T09:38:00,25.56,25.74,195,34.10,take_profit,paper-b6b4fe84f27d4dd981,paper-1765a8d5a92e482d91
+AAPL,LONG,2026-03-02T09:38:00,2026-03-02T09:40:00,25.74,25.89,194,28.10,take_profit,paper-0dd02a4ed5ee42e9b7,paper-854c145395144e7bb9

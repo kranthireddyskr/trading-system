@@ -1,0 +1,4 @@
+symbol,side,entry_time,exit_time,entry_price,exit_price,quantity,pnl,reason
+AAPL,LONG,2026-03-02T09:36:00,2026-03-02T09:37:00,25.42,25.56,983,137.62,take_profit
+AAPL,LONG,2026-03-02T09:37:00,2026-03-02T09:38:00,25.56,25.74,983,176.94,take_profit
+AAPL,LONG,2026-03-02T09:38:00,2026-03-02T09:40:00,25.74,25.89,983,147.45,take_profit
