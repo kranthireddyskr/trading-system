@@ -1,2 +1,2 @@
-"""Trading system package."""
+"""Production trading system package."""
 
