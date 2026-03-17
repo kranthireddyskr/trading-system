@@ -1,5 +1,14 @@
-requests>=2.31.0
-psycopg[binary]>=3.2.0
-boto3>=1.34.0
-# Optional for future websocket streaming support:
-# websocket-client>=1.8.0
+requests
+websocket-client
+python-dotenv
+boto3
+pandas
+pandas-ta
+numpy
+scikit-learn
+lightgbm
+joblib
+flask
+psycopg2-binary
+alpaca-trade-api
+pytz
