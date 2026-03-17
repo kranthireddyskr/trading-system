@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+live_logs/
+logs/
+logs_smoke/
+logs_smoke2/
+*.log
+.env

@@ -1,7 +1,0 @@
-timestamp,order_id,symbol,side,quantity,requested_price,fill_price,slippage,commission,provider
-2026-03-15T14:49:52.454711,paper-e43e1b447a1640eebd,AAPL,BUY,196,25.42,25.42,0.0025,0.0000,paper_backtest
-2026-03-15T14:49:52.461173,paper-4adc56697bdf4b718d,AAPL,SELL,196,25.56,25.56,0.0026,0.0000,paper_backtest
-2026-03-15T14:49:52.467103,paper-b6b4fe84f27d4dd981,AAPL,BUY,195,25.56,25.56,0.0026,0.0000,paper_backtest
-2026-03-15T14:49:52.482251,paper-1765a8d5a92e482d91,AAPL,SELL,195,25.74,25.74,0.0026,0.0000,paper_backtest
-2026-03-15T14:49:52.494710,paper-0dd02a4ed5ee42e9b7,AAPL,BUY,194,25.74,25.74,0.0026,0.0000,paper_backtest
-2026-03-15T14:49:52.517056,paper-854c145395144e7bb9,AAPL,SELL,194,25.89,25.89,0.0026,0.0000,paper_backtest

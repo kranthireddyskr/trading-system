@@ -1,5 +1,0 @@
-timestamp,symbol,side,score,price,metadata
-2026-03-02T09:36:00,AAPL,BUY,1.7035,25.42,"{""close"": 25.42, ""news_score"": 0.0, ""technical_score"": 1.7034819616099282, ""volume"": 140000.0}"
-2026-03-02T09:37:00,AAPL,BUY,1.8288,25.56,"{""close"": 25.56, ""news_score"": 0.0, ""technical_score"": 1.828828141239358, ""volume"": 165000.0}"
-2026-03-02T09:38:00,AAPL,BUY,2.0261,25.74,"{""close"": 25.74, ""news_score"": 0.0, ""technical_score"": 2.026110888270548, ""volume"": 190000.0}"
-2026-03-02T09:39:00,AAPL,BUY,1.9123,25.81,"{""close"": 25.81, ""news_score"": 0.0, ""technical_score"": 1.9122524984593956, ""volume"": 182000.0}"
