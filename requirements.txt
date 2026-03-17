@@ -2,13 +2,12 @@ requests
 websocket-client
 python-dotenv
 boto3
-pandas
-pandas-ta
+pandas==2.0.3
 numpy
 scikit-learn
 lightgbm
 joblib
 flask
 psycopg2-binary
-alpaca-trade-api
 pytz
+ta
