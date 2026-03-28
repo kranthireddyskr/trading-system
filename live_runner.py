@@ -11,7 +11,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Live or paper trading runner")
     parser.add_argument("--watchlist", default="trading_system/config/watchlist.txt")
     parser.add_argument("--output-dir", default="live_logs")
-    parser.add_argument("--poll-seconds", type=int, default=1)
+    parser.add_argument("--poll-seconds", type=int, default=60)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--max-loops", type=int, default=None)
     parser.add_argument("--paper", action="store_true", default=True)

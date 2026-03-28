@@ -52,7 +52,7 @@ class Settings:
     alert_smtp_password: str = _get_env("ALERT_SMTP_PASSWORD")
     dashboard_port: int = int(_get_env("DASHBOARD_PORT", "8080"))
     timezone: str = _get_env("TRADING_TIMEZONE", "America/New_York")
-    poll_seconds: int = int(_get_env("POLL_SECONDS", "1"))
+    poll_seconds: int = int(_get_env("POLL_SECONDS", "60"))
     flush_interval_seconds: int = int(_get_env("FLUSH_INTERVAL_SECONDS", "5"))
     log_level: str = _get_env("LOG_LEVEL", "INFO")
 
