@@ -2,8 +2,8 @@ requests
 websocket-client
 python-dotenv
 boto3
-pandas==2.0.3
-numpy
+pandas>=2.2.0
+numpy>=1.26.0,<3
 scikit-learn
 lightgbm
 joblib
