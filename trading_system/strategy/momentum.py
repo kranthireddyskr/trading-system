@@ -30,7 +30,12 @@ class MomentumStrategy(BaseStrategy):
         if len(history) < self.warmup_periods:
             return None
         frame = pd.DataFrame([vars(item) for item in history]).set_index("timestamp")
-        frame = ensure_ta(frame)
+        try:
+            frame = ensure_ta(frame)
+        except Exception as e:
+            import logging
+            logging.warning(f"Indicator calculation failed: {e}")
+            return None
         latest = frame.iloc[-1]
         if int(latest["volume"]) < self.min_volume:
             return None

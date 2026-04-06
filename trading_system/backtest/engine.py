@@ -60,12 +60,21 @@ class BacktestEngine:
                         generated_signals.append(signal)
                 position = positions.get(symbol)
                 if position:
+                    should_close = False
+                    close_side = "sell"
                     if position.side == "long" and (bar.low <= (position.stop_loss or 0) or bar.high >= (position.take_profit or 10 ** 9)):
-                        order = self.order_manager.submit(symbol=symbol, side="sell", qty=position.qty, order_type="market", strategy=position.strategy)
+                        should_close = True
+                        close_side = "sell"
+                    elif position.side == "short" and (bar.high >= (position.stop_loss or 10 ** 9) or bar.low <= (position.take_profit or 0)):
+                        should_close = True
+                        close_side = "buy"
+                    if should_close:
+                        order = self.order_manager.submit(symbol=symbol, side=close_side, qty=position.qty, order_type="market", strategy=position.strategy)
                         fill = self.order_manager.fill_order(order, bar.close)
                         if fill is not None:
-                            pnl = round((fill.fill_price - position.entry_price) * position.qty, 2)
-                            trade = Trade(symbol, "long", position.opened_at, bar.timestamp, position.entry_price, fill.fill_price, position.qty, pnl, position.strategy)
+                            direction = 1 if position.side == "long" else -1
+                            pnl = round((fill.fill_price - position.entry_price) * position.qty * direction, 2)
+                            trade = Trade(symbol, position.side, position.opened_at, bar.timestamp, position.entry_price, fill.fill_price, position.qty, pnl, position.strategy)
                             trades.append(trade)
                             portfolio.update_attribution(trade)
                             cash += round(fill.fill_price * position.qty, 2)

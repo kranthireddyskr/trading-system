@@ -29,7 +29,8 @@ class OrderManager:
         for order_id, order in list(self.active_orders.items()):
             if order.status == "filled":
                 continue
-            if now - order.submitted_at > timedelta(seconds=self.timeout_seconds):
+            submitted = order.submitted_at.replace(tzinfo=None) if order.submitted_at.tzinfo else order.submitted_at
+            if now - submitted > timedelta(seconds=self.timeout_seconds):
                 self.broker.cancel_order(order_id)
                 order.status = "cancelled"
                 cancelled.append(order_id)
