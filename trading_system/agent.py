@@ -27,7 +27,7 @@ from trading_system.risk.drawdown import DrawdownMonitor
 from trading_system.risk.limits import RiskLimits
 from trading_system.risk.position_sizer import PositionSizer
 from trading_system.storage.file_storage import FileStorage
-from trading_system.storage.models import Fill, MarketBar, NewsEvent, Position, Signal, SystemEvent, Trade
+from trading_system.storage.models import Fill, MarketBar, NewsEvent, Order, Position, Signal, SystemEvent, Trade
 from trading_system.storage.timescale import TimescaleDBWriter
 from trading_system.strategy.mean_reversion import MeanReversionStrategy
 from trading_system.strategy.ml_signal import MLSignalStrategy
@@ -385,6 +385,8 @@ class TradingAgent:
                             generated_signals.append(signal_obj)
             for signal_obj in self.portfolio.aggregate(generated_signals):
                 self._record_signal(signal_obj)
+                if not self.bar_history[signal_obj.symbol]:
+                    continue
                 latest_bar = self.bar_history[signal_obj.symbol][-1]
                 self._open_position(signal_obj, latest_bar, regime_map.get(signal_obj.symbol, "UNKNOWN"))
             synced_fills = self.order_manager.sync_open_orders(market_prices)

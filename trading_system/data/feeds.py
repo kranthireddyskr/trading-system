@@ -75,8 +75,11 @@ class AlpacaWebSocketFeed:
         for event in events:
             event_type = event.get("T")
             if event_type == "b":
-                bar = normalize_bar(event, event["S"], "websocket")
-                self.output_queue.put(bar)
+                try:
+                    bar = normalize_bar(event, event["S"], "websocket")
+                    self.output_queue.put(bar)
+                except Exception as exc:
+                    self.logger.warning("Failed to parse WebSocket bar: %s", exc)
             elif event_type in {"success", "subscription"}:
                 self.logger.info("WebSocket event: %s", event)
             elif event_type == "error":
@@ -102,7 +105,10 @@ class AlpacaWebSocketFeed:
                 snapshot = payload.get(symbol)
                 if not snapshot or "minuteBar" not in snapshot:
                     continue
-                bar = normalize_bar(snapshot["minuteBar"], symbol, "rest")
-                self.output_queue.put(bar)
+                try:
+                    bar = normalize_bar(snapshot["minuteBar"], symbol, "rest")
+                    self.output_queue.put(bar)
+                except Exception as exc:
+                    self.logger.warning("Failed to parse REST bar for %s: %s", symbol, exc)
         except Exception as exc:
             self.logger.exception("REST fallback failed: %s", exc)

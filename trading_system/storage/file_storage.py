@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import threading
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
@@ -13,6 +14,7 @@ class FileStorage:
     def __init__(self, base_dir: Path) -> None:
         self.base_dir = Path(base_dir)
         self.base_dir.mkdir(parents=True, exist_ok=True)
+        self._lock = threading.Lock()
 
     def __repr__(self) -> str:
         return f"FileStorage(base_dir={str(self.base_dir)!r})"
@@ -22,12 +24,13 @@ class FileStorage:
         return self.base_dir / f"{prefix}_{day}.{suffix}"
 
     def _append_csv(self, path: Path, headers: list[str], row: list[Any]) -> None:
-        write_header = not path.exists()
-        with path.open("a", newline="", encoding="utf-8") as handle:
-            writer = csv.writer(handle)
-            if write_header:
-                writer.writerow(headers)
-            writer.writerow(row)
+        with self._lock:
+            write_header = not path.exists()
+            with path.open("a", newline="", encoding="utf-8") as handle:
+                writer = csv.writer(handle)
+                if write_header:
+                    writer.writerow(headers)
+                writer.writerow(row)
 
     def write_bar(self, bar: MarketBar) -> None:
         self._append_csv(

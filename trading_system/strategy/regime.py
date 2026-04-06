@@ -25,7 +25,12 @@ class MarketRegimeDetector:
         if len(bars) < 200:
             return MarketRegime.UNKNOWN
         frame = pd.DataFrame([vars(item) for item in bars]).set_index("timestamp")
-        frame = ensure_ta(frame)
+        try:
+            frame = ensure_ta(frame)
+        except Exception as e:
+            import logging
+            logging.warning(f"Indicator calculation failed: {e}")
+            return MarketRegime.UNKNOWN
         latest = frame.iloc[-1]
         ma50 = frame["close"].rolling(50).mean().iloc[-1]
         ma200 = frame["close"].rolling(200).mean().iloc[-1]

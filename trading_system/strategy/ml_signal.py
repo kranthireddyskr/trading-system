@@ -38,7 +38,15 @@ class MLSignalStrategy(BaseStrategy):
 
     def _feature_frame(self, bars: list[MarketBar]) -> pd.DataFrame:
         frame = pd.DataFrame([vars(item) for item in bars]).set_index("timestamp")
-        frame = ensure_ta(frame)
+        try:
+            frame = ensure_ta(frame)
+        except Exception as e:
+            import logging
+            logging.warning(f"Indicator calculation failed: {e}")
+            return frame.iloc[0:0]
+        frame["returns_5"] = frame["close"].pct_change(5)
+        frame["returns_10"] = frame["close"].pct_change(10)
+        frame["returns_20"] = frame["close"].pct_change(20)
         frame["volume_ratio"] = frame["volume"] / frame["volume"].rolling(20).mean().replace(0.0, 1.0)
         frame["hour"] = frame.index.hour
         frame["day_of_week"] = frame.index.dayofweek

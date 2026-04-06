@@ -17,7 +17,7 @@ class MeanReversionStrategy(BaseStrategy):
         self.lookback = lookback
         self.zscore_threshold = zscore_threshold
         self.params = {"lookback": float(lookback), "zscore_threshold": float(zscore_threshold)}
-        self.warmup_periods = lookback
+        self.warmup_periods = max(lookback, 30)
         self._bars: dict[str, list[MarketBar]] = defaultdict(list)
 
     def __repr__(self) -> str:
@@ -30,7 +30,12 @@ class MeanReversionStrategy(BaseStrategy):
         if len(history) < self.warmup_periods:
             return None
         frame = pd.DataFrame([vars(item) for item in history]).set_index("timestamp")
-        frame = ensure_ta(frame)
+        try:
+            frame = ensure_ta(frame)
+        except Exception as e:
+            import logging
+            logging.warning(f"Indicator calculation failed: {e}")
+            return None
         latest = frame.iloc[-1]
         rolling_mean = frame["close"].rolling(self.lookback).mean().iloc[-1]
         rolling_std = frame["close"].rolling(self.lookback).std(ddof=0).iloc[-1]

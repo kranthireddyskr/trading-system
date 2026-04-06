@@ -76,7 +76,7 @@ class PerformanceMetrics:
             win_rate_pct=round(win_rate, 2),
             average_win=round(mean(wins), 2) if wins else 0.0,
             average_loss=round(mean(losses), 2) if losses else 0.0,
-            profit_factor=round(sum(wins) / abs(sum(losses)), 2) if losses else 0.0,
+            profit_factor=round(sum(wins) / abs(sum(losses)), 2) if losses and sum(losses) != 0 else 0.0,
             expectancy_per_trade=round(mean([trade.pnl for trade in trades]), 2) if trades else 0.0,
             number_of_trades=len(trades),
             average_holding_period_minutes=round(avg_hold, 2),
