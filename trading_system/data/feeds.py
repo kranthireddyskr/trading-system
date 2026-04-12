@@ -62,11 +62,14 @@ class AlpacaWebSocketFeed:
             backoff = min(backoff * 2, 60)
 
     def _on_open(self, ws: websocket.WebSocketApp) -> None:
+        # Send auth only — subscribe is sent after receiving the "authenticated" success message.
+        # Alpaca requires auth to complete before accepting subscriptions; sending both
+        # simultaneously causes the subscribe to be silently rejected and no bars arrive.
         ws.send(json.dumps({"action": "auth", "key": self.api_key, "secret": self.api_secret}))
-        ws.send(json.dumps({"action": "subscribe", "bars": self.symbols, "quotes": self.symbols, "trades": self.symbols}))
-        self.logger.info("WebSocket opened and subscriptions sent")
+        self.logger.info("WebSocket opened, auth sent")
 
     def _on_message(self, ws: websocket.WebSocketApp, message: str) -> None:
+        self.logger.info("RAW BAR EVENT: %s", message)
         try:
             events = json.loads(message)
         except json.JSONDecodeError:
@@ -74,15 +77,22 @@ class AlpacaWebSocketFeed:
             return
         for event in events:
             event_type = event.get("T")
-            if event_type == "b":
+            if event_type == "success":
+                msg = event.get("msg", "")
+                self.logger.info("WebSocket success: %s", msg)
+                if msg == "authenticated":
+                    # Auth confirmed — now it is safe to subscribe
+                    ws.send(json.dumps({"action": "subscribe", "bars": self.symbols}))
+                    self.logger.info("Authenticated — subscribe sent for %s", self.symbols)
+            elif event_type == "subscription":
+                self.logger.info("Subscription confirmed: %s", event)
+            elif event_type == "b":
                 try:
                     bar = normalize_bar(event, event["S"], "websocket")
                     self.output_queue.put(bar)
                     self.logger.info("Bar received: %s close=%.4f volume=%s", bar.symbol, bar.close, bar.volume)
                 except Exception as exc:
                     self.logger.warning("Failed to parse WebSocket bar: %s", exc)
-            elif event_type in {"success", "subscription"}:
-                self.logger.info("WebSocket event: %s", event)
             elif event_type == "error":
                 self.logger.error("WebSocket error payload: %s", event)
 

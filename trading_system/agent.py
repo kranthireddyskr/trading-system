@@ -344,16 +344,26 @@ class TradingAgent:
     def run(self, max_loops: int | None = None) -> None:
         self.start_background_services()
         loops = 0
+        bars_processed = 0
+        _market_was_open = False
         while self.running:
             now = datetime.now(tz=ZoneInfo(self.settings.timezone))
             if max_loops is not None and loops >= max_loops:
                 break
             loops += 1
-            if not self.market_is_open(now):
+            market_open = self.market_is_open(now)
+            if market_open and not _market_was_open:
+                self.logger.info("MARKET OPEN - starting to process bars")
+            elif not market_open and _market_was_open:
+                self.logger.info("MARKET CLOSE - stopping bar processing (bars today: %d)", bars_processed)
+                bars_processed = 0
+            _market_was_open = market_open
+            if not market_open:
                 self._log_event("info", "Market closed, skipping loop", {"timestamp": now.isoformat()})
                 self.heartbeat.write("idle", {"message": "market closed"})
                 time.sleep(self.settings.poll_seconds)
                 continue
+            self.logger.info("Checking queue, size: %d", self.bar_queue.qsize())
             regime_map: dict[str, str] = {}
             news_events = self.fetch_news(self.universe.symbols())
             incoming_bars: list[MarketBar] = []
@@ -368,7 +378,10 @@ class TradingAgent:
             generated_signals: list[Signal] = []
             market_prices: dict[str, float] = {}
             for bar in incoming_bars:
+                bars_processed += 1
                 self.logger.info("Processing bar: %s @ %.4f volume=%s", bar.symbol, bar.close, bar.volume)
+                if bars_processed % 10 == 0:
+                    self.logger.info("Processed %d bars today", bars_processed)
                 self._record_bar(bar)
                 market_prices[bar.symbol] = bar.close
                 self._handle_existing_positions(bar)
