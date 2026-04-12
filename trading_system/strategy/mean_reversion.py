@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from collections import defaultdict
 from typing import Optional
 
@@ -17,7 +18,7 @@ class MeanReversionStrategy(BaseStrategy):
         self.lookback = lookback
         self.zscore_threshold = zscore_threshold
         self.params = {"lookback": float(lookback), "zscore_threshold": float(zscore_threshold)}
-        self.warmup_periods = max(lookback, 30)
+        self.warmup_periods = max(lookback, 14)
         self._bars: dict[str, list[MarketBar]] = defaultdict(list)
 
     def __repr__(self) -> str:
@@ -33,8 +34,7 @@ class MeanReversionStrategy(BaseStrategy):
         try:
             frame = ensure_ta(frame)
         except Exception as e:
-            import logging
-            logging.warning(f"Indicator calculation failed: {e}")
+            logging.warning("ensure_ta failed for %s: %s", bar.symbol, e)
             return None
         latest = frame.iloc[-1]
         rolling_mean = frame["close"].rolling(self.lookback).mean().iloc[-1]
