@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from collections import defaultdict
 
 import pandas as pd
@@ -28,8 +29,7 @@ class MarketRegimeDetector:
         try:
             frame = ensure_ta(frame)
         except Exception as e:
-            import logging
-            logging.warning(f"Indicator calculation failed: {e}")
+            logging.warning("ensure_ta failed for %s: %s", symbol, e)
             return MarketRegime.UNKNOWN
         latest = frame.iloc[-1]
         ma50 = frame["close"].rolling(50).mean().iloc[-1]

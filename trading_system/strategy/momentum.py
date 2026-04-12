@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from collections import defaultdict
 from typing import Optional
 
@@ -17,7 +18,7 @@ class MomentumStrategy(BaseStrategy):
         self.lookback = lookback
         self.min_volume = min_volume
         self.params = {"lookback": float(lookback), "min_volume": float(min_volume)}
-        self.warmup_periods = lookback
+        self.warmup_periods = 14
         self._bars: dict[str, list[MarketBar]] = defaultdict(list)
 
     def __repr__(self) -> str:
@@ -33,8 +34,7 @@ class MomentumStrategy(BaseStrategy):
         try:
             frame = ensure_ta(frame)
         except Exception as e:
-            import logging
-            logging.warning(f"Indicator calculation failed: {e}")
+            logging.warning("ensure_ta failed for %s: %s", bar.symbol, e)
             return None
         latest = frame.iloc[-1]
         if int(latest["volume"]) < self.min_volume:

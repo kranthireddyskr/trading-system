@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import time
 import uuid
 from datetime import datetime
@@ -64,7 +65,9 @@ class AlpacaBroker(BrokerBase):
             payload["order_class"] = "bracket"
             payload["take_profit"] = {"limit_price": kwargs.get("take_profit_price")}
             payload["stop_loss"] = {"stop_price": kwargs.get("stop_loss_price")}
+        logging.info("Submitting order to Alpaca: %s %s %s", payload["symbol"], payload["side"], payload["qty"])
         result = self._request("POST", "/v2/orders", payload)
+        logging.info("Order response from Alpaca: id=%s status=%s", result.get("id"), result.get("status"))
         return Order(
             order_id=str(result.get("id", client_order_id)),
             symbol=str(result["symbol"]),

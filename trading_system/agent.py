@@ -312,9 +312,11 @@ class TradingAgent:
         qty = self.position_sizer.size(self.cash, bar.close, atr_like, win_rate, avg_win, avg_loss, multiplier)
         if qty <= 0:
             return
+        side = "buy" if signal.direction == "long" else "sell"
+        self.logger.info("Order submitted: %s %s %s shares @ market", signal.symbol, side.upper(), qty)
         order = self.order_manager.submit(
             symbol=signal.symbol,
-            side="buy" if signal.direction == "long" else "sell",
+            side=side,
             qty=qty,
             order_type="market",
             strategy=signal.strategy,
@@ -366,6 +368,7 @@ class TradingAgent:
             generated_signals: list[Signal] = []
             market_prices: dict[str, float] = {}
             for bar in incoming_bars:
+                self.logger.info("Processing bar: %s @ %.4f volume=%s", bar.symbol, bar.close, bar.volume)
                 self._record_bar(bar)
                 market_prices[bar.symbol] = bar.close
                 self._handle_existing_positions(bar)
@@ -375,6 +378,7 @@ class TradingAgent:
                 for strategy in active:
                     signal_obj = strategy.on_bar(bar)
                     if signal_obj is not None:
+                        self.logger.info("Signal: %s %s strength=%.2f from %s", signal_obj.symbol, signal_obj.direction, signal_obj.strength, signal_obj.strategy)
                         generated_signals.append(signal_obj)
                 for news_event in news_events:
                     if news_event.symbol != bar.symbol:

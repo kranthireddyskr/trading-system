@@ -4,7 +4,7 @@ import ta
 
 
 def ensure_ta(df: pd.DataFrame) -> pd.DataFrame:
-    if len(df) < 30:
+    if len(df) < 14:
         return df
     close = df["close"]
     high = df["high"]

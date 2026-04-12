@@ -78,6 +78,7 @@ class AlpacaWebSocketFeed:
                 try:
                     bar = normalize_bar(event, event["S"], "websocket")
                     self.output_queue.put(bar)
+                    self.logger.info("Bar received: %s close=%.4f volume=%s", bar.symbol, bar.close, bar.volume)
                 except Exception as exc:
                     self.logger.warning("Failed to parse WebSocket bar: %s", exc)
             elif event_type in {"success", "subscription"}:
@@ -108,6 +109,7 @@ class AlpacaWebSocketFeed:
                 try:
                     bar = normalize_bar(snapshot["minuteBar"], symbol, "rest")
                     self.output_queue.put(bar)
+                    self.logger.info("Bar received: %s close=%.4f volume=%s", bar.symbol, bar.close, bar.volume)
                 except Exception as exc:
                     self.logger.warning("Failed to parse REST bar for %s: %s", symbol, exc)
         except Exception as exc:
