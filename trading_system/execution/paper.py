@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import uuid
 from datetime import datetime
 from typing import Any
@@ -19,6 +20,7 @@ class PaperBroker(BrokerBase):
 
     def submit_order(self, **kwargs: Any) -> Order:
         order_id = f"paper-{uuid.uuid4().hex[:12]}"
+        logging.info("Submitting paper order: %s %s %s", kwargs["symbol"], kwargs["side"], kwargs["qty"])
         order = Order(
             order_id=order_id,
             symbol=str(kwargs["symbol"]),
@@ -32,12 +34,14 @@ class PaperBroker(BrokerBase):
             strategy=str(kwargs.get("strategy", "")),
         )
         self.orders[order_id] = order
+        logging.info("Order confirmed: id=%s %s %s %s", order_id, kwargs["symbol"], kwargs["side"], kwargs["qty"])
         return order
 
     def simulate_fill(self, order: Order, market_price: float) -> Fill:
         direction = 1 if order.side.lower() in {"buy", "long"} else -1
         fill_price = round(float(market_price) * (1 + (direction * self.slippage_pct)), 2)
         order.status = "filled"
+        logging.info("Fill simulated: %s %s %s @ %.4f (slippage=%.4f)", order.symbol, order.side, order.qty, fill_price, abs(fill_price - market_price))
         return Fill(
             order_id=order.order_id,
             symbol=order.symbol,
