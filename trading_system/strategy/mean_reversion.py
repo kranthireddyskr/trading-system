@@ -47,8 +47,9 @@ class MeanReversionStrategy(BaseStrategy):
             return Signal(bar.symbol, "long", min(1.0, abs(float(zscore)) / 3.0), self.name, f"Z-score={zscore:.2f}, ATR={atr_stop:.2f}", bar.timestamp)
         if zscore >= self.zscore_threshold:
             return Signal(bar.symbol, "short", min(1.0, abs(float(zscore)) / 3.0), self.name, f"Z-score={zscore:.2f}, ATR={atr_stop:.2f}", bar.timestamp)
-        if abs(zscore) < 0.25:
-            return Signal(bar.symbol, "close", 0.5, self.name, "Price reverted to mean", bar.timestamp)
+        # Neutral zone — no signal. Position exits are handled by stop/take-profit in the agent,
+        # not by emitting "close" here. Emitting "close" every bar (prices are near the mean
+        # most of the time) flooded the portfolio aggregator and drowned out real signals.
         return None
 
     def on_news(self, event: NewsEvent) -> Optional[Signal]:

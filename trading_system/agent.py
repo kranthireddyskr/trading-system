@@ -295,12 +295,16 @@ class TradingAgent:
 
     def _open_position(self, signal: Signal, bar: MarketBar, regime_label: str) -> None:
         if signal.symbol in self.positions:
+            self.logger.info("Signal rejected: already have open position in %s", signal.symbol)
             return
         if len(self.positions) >= self.risk_limits.max_positions:
+            self.logger.info("Signal rejected: max positions reached (%d/%d)", len(self.positions), self.risk_limits.max_positions)
             return
         if not self.correlation.is_allowed(signal.symbol, list(self.positions.values()), self.bar_history):
+            self.logger.info("Signal rejected: correlation check failed for %s", signal.symbol)
             return
         if bar.close < self.risk_limits.min_price or bar.volume < self.risk_limits.min_volume:
+            self.logger.info("Signal rejected: price/volume filter for %s (close=%.2f vol=%d min_vol=%d)", signal.symbol, bar.close, bar.volume, self.risk_limits.min_volume)
             return
         win_rate = len([trade for trade in self.trades if trade.pnl > 0]) / len(self.trades) if self.trades else 0.5
         avg_win = sum(trade.pnl for trade in self.trades if trade.pnl > 0) / len([trade for trade in self.trades if trade.pnl > 0]) if any(trade.pnl > 0 for trade in self.trades) else 100.0
@@ -402,6 +406,11 @@ class TradingAgent:
                             generated_signals.append(signal_obj)
             for signal_obj in self.portfolio.aggregate(generated_signals):
                 self._record_signal(signal_obj)
+                if signal_obj.direction == "close":
+                    # "close" signals are exit-only; position exits are managed by
+                    # stop/take-profit in _handle_existing_positions, not here.
+                    self.logger.info("Skipping close signal for %s (no open position to close)", signal_obj.symbol)
+                    continue
                 if not self.bar_history[signal_obj.symbol]:
                     continue
                 latest_bar = self.bar_history[signal_obj.symbol][-1]
