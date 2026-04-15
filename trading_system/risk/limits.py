@@ -14,7 +14,7 @@ class RiskLimits:
     max_drawdown_pct: float = 0.10
     max_trades_per_day: int = 20
     min_price: float = 5.0
-    min_volume: int = 500000
+    min_volume: int = 500  # IEX free feed captures ~2% of real volume; 500 IEX shares ≈ 25,000 real shares
 
     def __repr__(self) -> str:
         return f"RiskLimits(max_positions={self.max_positions}, max_position_pct={self.max_position_pct}, max_drawdown_pct={self.max_drawdown_pct})"

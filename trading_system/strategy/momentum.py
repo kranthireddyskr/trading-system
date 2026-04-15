@@ -14,7 +14,7 @@ from trading_system.strategy.indicators import ensure_ta
 class MomentumStrategy(BaseStrategy):
     name = "momentum"
 
-    def __init__(self, lookback: int = 30, min_volume: int = 100000) -> None:
+    def __init__(self, lookback: int = 30, min_volume: int = 500) -> None:
         self.lookback = lookback
         self.min_volume = min_volume
         self.params = {"lookback": float(lookback), "min_volume": float(min_volume)}
