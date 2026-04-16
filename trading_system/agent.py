@@ -414,7 +414,10 @@ class TradingAgent:
                 if not self.bar_history[signal_obj.symbol]:
                     continue
                 latest_bar = self.bar_history[signal_obj.symbol][-1]
-                self._open_position(signal_obj, latest_bar, regime_map.get(signal_obj.symbol, "UNKNOWN"))
+                try:
+                    self._open_position(signal_obj, latest_bar, regime_map.get(signal_obj.symbol, "UNKNOWN"))
+                except Exception as e:
+                    self.logger.error("Order failed for %s, continuing: %s", signal_obj.symbol, e)
             synced_fills = self.order_manager.sync_open_orders(market_prices)
             if synced_fills:
                 self._apply_broker_fills(synced_fills, market_prices)

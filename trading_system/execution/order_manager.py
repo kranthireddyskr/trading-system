@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -19,6 +20,11 @@ class OrderManager:
         return f"OrderManager(timeout_seconds={self.timeout_seconds}, active_orders={len(self.active_orders)})"
 
     def submit(self, **kwargs) -> Order:
+        qty = int(kwargs.get("qty", 0))
+        if qty < 1:
+            logging.warning("Skipping order for %s: qty %s rounds to %d < 1", kwargs.get("symbol"), kwargs.get("qty"), qty)
+            raise ValueError(f"Order qty {kwargs.get('qty')} rounds to {qty} < 1")
+        kwargs["qty"] = qty
         order = self.broker.submit_order(**kwargs)
         self.active_orders[order.order_id] = order
         return order
