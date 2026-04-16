@@ -51,7 +51,7 @@ class AlpacaBroker(BrokerBase):
         client_order_id = f"order-{uuid.uuid4().hex[:14]}"
         payload = {
             "symbol": kwargs["symbol"],
-            "qty": kwargs["qty"],
+            "qty": str(int(kwargs["qty"])),
             "side": kwargs["side"],
             "type": kwargs.get("order_type", "market"),
             "time_in_force": kwargs.get("time_in_force", "day"),
