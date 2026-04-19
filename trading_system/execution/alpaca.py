@@ -63,8 +63,14 @@ class AlpacaBroker(BrokerBase):
             payload["stop_price"] = kwargs["stop_price"]
         if kwargs.get("take_profit_price") is not None or kwargs.get("stop_loss_price") is not None:
             payload["order_class"] = "bracket"
-            payload["take_profit"] = {"limit_price": kwargs.get("take_profit_price")}
-            payload["stop_loss"] = {"stop_price": kwargs.get("stop_loss_price")}
+            # Alpaca requires bracket leg prices as strings, not numbers
+            tp = kwargs.get("take_profit_price")
+            sl = kwargs.get("stop_loss_price")
+            payload["take_profit"] = {"limit_price": str(round(float(tp), 2)) if tp is not None else None}
+            payload["stop_loss"] = {"stop_price": str(round(float(sl), 2)) if sl is not None else None}
+            # Remove None values from leg payloads
+            payload["take_profit"] = {k: v for k, v in payload["take_profit"].items() if v is not None}
+            payload["stop_loss"] = {k: v for k, v in payload["stop_loss"].items() if v is not None}
         logging.info("Submitting order to Alpaca: %s %s %s", payload["symbol"], payload["side"], payload["qty"])
         result = self._request("POST", "/v2/orders", payload)
         logging.info("Order response from Alpaca: id=%s status=%s", result.get("id"), result.get("status"))

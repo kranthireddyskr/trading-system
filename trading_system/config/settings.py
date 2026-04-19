@@ -55,6 +55,18 @@ class Settings:
     poll_seconds: int = int(_get_env("POLL_SECONDS", "60") or "60")
     flush_interval_seconds: int = int(_get_env("FLUSH_INTERVAL_SECONDS", "5") or "5")
     log_level: str = _get_env("LOG_LEVEL", "INFO")
+    # Universe / screening
+    universe_size: int = int(_get_env("UNIVERSE_SIZE", "50") or "50")
+    min_price: float = float(_get_env("MIN_PRICE", "10.0") or "10.0")
+    min_avg_volume: int = int(_get_env("MIN_AVG_VOLUME", "1000000") or "1000000")
+    # Sentiment gating
+    sentiment_gate_threshold: float = float(_get_env("SENTIMENT_GATE_THRESHOLD", "0.1") or "0.1")
+    # End-of-day behaviour
+    close_positions_eod: bool = _get_env("CLOSE_POSITIONS_EOD", "true").lower() in {"1", "true", "yes"}
+    # Bracket order risk parameters
+    bracket_orders: bool = _get_env("BRACKET_ORDERS", "true").lower() in {"1", "true", "yes"}
+    stop_loss_pct: float = float(_get_env("STOP_LOSS_PCT", "0.02") or "0.02")
+    take_profit_pct: float = float(_get_env("TAKE_PROFIT_PCT", "0.04") or "0.04")
 
     def __repr__(self) -> str:
         return (
