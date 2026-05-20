@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Road Trip 2026 — Irving → Nashville → Memphis 🚗</title>
+  <meta name="description" content="Memorial Day Weekend Road Trip Dashboard — May 22–25, 2026" />
+  <!-- Tailwind CSS via CDN — only external dependency -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: { brand: '#F97316' } } }
+    }
+  </script>
+  <style>
+    /* ── Theme variables ── */
+    :root {
+      --bg:#0F172A; --bg2:#1E293B; --bg3:#334155;
+      --txt:#F8FAFC; --txt2:#94A3B8; --acc:#F97316; --brd:#334155;
+    }
+    body.light {
+      --bg:#F1F5F9; --bg2:#FFFFFF; --bg3:#E2E8F0;
+      --txt:#0F172A; --txt2:#64748B; --acc:#EA580C; --brd:#CBD5E1;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      background:var(--bg);color:var(--txt);
+      transition:background .25s,color .25s;min-height:100vh;
+    }
+    /* ── Tabs ── */
+    .tab-panel{display:none}
+    .tab-panel.active{display:block;animation:rise .25s ease}
+    @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .tab-btn{border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap}
+    .tab-btn.active{color:var(--acc);border-bottom-color:var(--acc)}
+    /* ── Shared ── */
+    .card{background:var(--bg2);border:1px solid var(--brd);border-radius:.75rem}
+    #tab-nav{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--brd);backdrop-filter:blur(8px)}
+    .tab-scroll{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .tab-scroll::-webkit-scrollbar{display:none}
+    /* ── Hero ── */
+    .hero{background:linear-gradient(135deg,#0F172A 0%,#1c2d4a 50%,#0F172A 100%);position:relative;overflow:hidden}
+    body.light .hero{background:linear-gradient(135deg,#0c1f3a 0%,#1a3a5c 50%,#0c1f3a 100%)}
+    .hero-dashes{position:absolute;bottom:0;left:0;right:0;height:3px;background:repeating-linear-gradient(to right,#F97316 0,#F97316 20px,transparent 20px,transparent 44px);opacity:.6}
+    .cd-box{background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);border-radius:.5rem;padding:.65rem 1rem;min-width:64px;text-align:center}
+    /* ── Timeline ── */
+    .tl-dot{width:11px;height:11px;background:var(--acc);border-radius:50%;border:2px solid var(--bg2);flex-shrink:0;margin-top:4px}
+    .tl-line{width:2px;flex:1;background:var(--brd);margin:3px 0}
+    /* ── Tables ── */
+    .t-table{width:100%;border-collapse:collapse}
+    .t-table th{background:var(--bg3);color:var(--txt2);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;padding:.6rem .75rem;text-align:left}
+    .t-table td{padding:.65rem .75rem;border-top:1px solid var(--brd);vertical-align:top;font-size:.875rem}
+    .t-table .hi{background:rgba(249,115,22,.08);font-weight:700}
+    /* ── Checkboxes ── */
+    input[type=checkbox]{accent-color:var(--acc);width:1rem;height:1rem;cursor:pointer;flex-shrink:0}
+    .cb-row{display:flex;align-items:flex-start;gap:.6rem;padding:.35rem 0}
+    .cb-row input:checked+span{text-decoration:line-through;opacity:.45}
+    /* ── Map ── */
+    .map-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:.75rem;border:1px solid var(--brd)}
+    .map-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+    /* ── Contact ── */
+    .avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:#fff;flex-shrink:0}
+    /* ── Toast ── */
+    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:#14532d;color:#bbf7d0;padding:.6rem 1.4rem;border-radius:2rem;font-size:.8rem;font-weight:600;transition:transform .3s;z-index:999;pointer-events:none;white-space:nowrap}
+    #toast.show{transform:translateX(-50%) translateY(0)}
+    /* ── Badge ── */
+    .badge{display:inline-block;font-size:.7rem;padding:.15rem .5rem;border-radius:9999px;font-weight:600}
+    .badge-green{background:rgba(74,222,128,.12);color:#4ade80}
+    .badge-yellow{background:rgba(251,191,36,.12);color:#fbbf24}
+    .badge-blue{background:rgba(96,165,250,.12);color:#60a5fa}
+    .badge-orange{background:rgba(249,115,22,.12);color:#fb923c}
+    @media(max-width:480px){.cd-box{min-width:52px;padding:.5rem .65rem}}
+  </style>
+</head>
+<body id="B">
+
+<!-- ════════ HERO ════════ -->
+<header class="hero px-4 py-10 text-center relative">
+  <button onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme"
+    class="absolute top-4 right-4 w-9 h-9 rounded-full border border-white/20 hover:bg-white/10 transition-colors text-lg leading-none flex items-center justify-center">
+    <span id="themeIcon">☀️</span>
+  </button>
+
+  <div class="inline-block text-xs font-bold uppercase tracking-widest text-orange-400 bg-orange-500/15 border border-orange-500/25 px-3 py-1 rounded-full mb-4">
+    Memorial Day Weekend 2026
+  </div>
+  <h1 class="text-4xl sm:text-5xl font-black text-white leading-tight mb-2">🚗 Road Trip 2026</h1>
+  <p class="text-base sm:text-lg text-slate-300 mb-1">Irving TX → Nashville TN → Memphis TN → Irving TX</p>
+  <p class="text-sm text-slate-400 mb-7">May 22–25 · Memorial Day Weekend · 5 Friends · ~1,540 Miles</p>
+
+  <p class="text-xs text-slate-400 uppercase tracking-widest mb-3">Departing in</p>
+  <div class="flex justify-center gap-2 sm:gap-3 flex-wrap mb-2">
+    <div class="cd-box"><div id="cdD" class="text-3xl sm:text-4xl font-black text-orange-400 tabular-nums">--</div><div class="text-xs text-slate-400 mt-1">Days</div></div>
+    <div class="cd-box"><div id="cdH" class="text-3xl sm:text-4xl font-black text-orange-400 tabular-nums">--</div><div class="text-xs text-slate-400 mt-1">Hrs</div></div>
+    <div class="cd-box"><div id="cdM" class="text-3xl sm:text-4xl font-black text-orange-400 tabular-nums">--</div><div class="text-xs text-slate-400 mt-1">Mins</div></div>
+    <div class="cd-box"><div id="cdS" class="text-3xl sm:text-4xl font-black text-orange-400 tabular-nums">--</div><div class="text-xs text-slate-400 mt-1">Secs</div></div>
+  </div>
+  <p class="text-xs text-slate-500">6:00 PM CT · Friday May 22, 2026 · Irving TX</p>
+  <div class="flex justify-center gap-1 mt-5 text-2xl" title="5 travelers">👤👤👤👤👤</div>
+  <p class="text-xs text-slate-500 mt-1">Kranthi · Rakshitha · Shiva · Priya · Arjun</p>
+  <div class="hero-dashes"></div>
+</header>
+
+<!-- ════════ TAB NAV ════════ -->
+<nav id="tab-nav">
+  <div class="tab-scroll">
+    <div class="flex min-w-max px-2 md:justify-center">
+      <button onclick="switchTab('itinerary')" id="t-itinerary" class="tab-btn active px-3.5 py-3 text-sm font-semibold text-slate-400 hover:text-white transition-colors">📅 Itinerary</button>
+      <button onclick="switchTab('map')"       id="t-map"       class="tab-btn px-3.5 py-3 text-sm font-semibold text-slate-400 hover:text-white transition-colors">🗺️ Map</button>
+      <button onclick="switchTab('drive')"     id="t-drive"     class="tab-btn px-3.5 py-3 text-sm font-semibold text-slate-400 hover:text-white transition-colors">🚦 Drive Plan</button>
+      <button onclick="switchTab('packing')"   id="t-packing"   class="tab-btn px-3.5 py-3 text-sm font-semibold text-slate-400 hover:text-white transition-colors">🎒 Packing</button>
+      <button onclick="switchTab('budget')"    id="t-budget"    class="tab-btn px-3.5 py-3 text-sm font-semibold text-slate-400 hover:text-white transition-colors">💰 Budget</button>
+      <button onclick="switchTab('contacts')"  id="t-contacts"  class="tab-btn px-3.5 py-3 text-sm font-semibold text-slate-400 hover:text-white transition-colors">👥 Contacts</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════ MAIN ════════ -->
+<main class="max-w-3xl mx-auto px-4 py-6">
+
+<!-- ─── ITINERARY ─── -->
+<div id="panel-itinerary" class="tab-panel active">
+  <h2 class="text-2xl font-black mb-1" style="color:var(--txt)">Trip Itinerary</h2>
+  <p class="text-sm mb-6" style="color:var(--txt2)">4 days · 3 nights · countless memories</p>
+
+  <!-- FRIDAY -->
+  <div class="card p-5 mb-4">
+    <div class="flex items-start gap-3 mb-4">
+      <span class="text-3xl">🚗</span>
+      <div class="flex-1">
+        <h3 class="text-lg font-black text-white">Friday, May 22</h3>
+        <p class="text-orange-400 text-sm font-semibold">Departure Day — Drive to Nashville</p>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="text-xs" style="color:var(--txt2)">~790 mi</div>
+        <div class="text-xs" style="color:var(--txt2)">~10 hrs driving</div>
+      </div>
+    </div>
+    <!-- Timeline -->
+    <div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">5:00 PM</span><span class="font-semibold text-white">🏁 Depart Irving, TX</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Gas up, load the car, and hit the road. I-30 East all the way to Little Rock.</p>
+          <span class="badge badge-green mt-1">Free</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">~7:30 PM</span><span class="font-semibold text-white">⛽ Gas + Driver Switch</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">East of Dallas, first rotation. Rakshitha takes the wheel. Bathrooms, snacks.</p>
+          <p class="text-xs mt-0.5" style="color:var(--txt2)">I-30 East, TX</p>
+          <span class="badge badge-yellow mt-1">~$12/person gas</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">~10:00 PM</span><span class="font-semibold text-white">🌙 Midway Stop — Little Rock, AR</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Halfway point! Swap to I-40 East here. Stretch, coffee, late-night Whataburger or Waffle House.</p>
+          <p class="text-xs mt-0.5" style="color:var(--txt2)">Little Rock, AR — I-30/I-40 interchange</p>
+          <span class="badge badge-yellow mt-1">~$10/person food</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div></div>
+        <div class="pb-1 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">~5:00 AM</span><span class="font-semibold text-white">🏨 Arrive Nashville, TN</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Check in to hotel. Sleep in — big day ahead in Music City.</p>
+          <p class="text-xs mt-0.5" style="color:var(--txt2)">Nashville, TN — Hotel TBD (book near Downtown/Midtown)</p>
+          <span class="badge badge-blue mt-1">Hotel: $40/person/night</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SATURDAY -->
+  <div class="card p-5 mb-4">
+    <div class="flex items-start gap-3 mb-4">
+      <span class="text-3xl">🎸</span>
+      <div class="flex-1">
+        <h3 class="text-lg font-black text-white">Saturday, May 23</h3>
+        <p class="text-orange-400 text-sm font-semibold">Nashville Day — Music City</p>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="text-xs" style="color:var(--txt2)">Full Day</div>
+        <div class="text-xs" style="color:var(--txt2)">~$125/person</div>
+      </div>
+    </div>
+    <div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">5–10 AM</span><span class="font-semibold text-white">😴 Rest / Hotel</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Catch a few hours of sleep. Check-in, freshen up. Don't rush — Nashville mornings are for recovery.</p>
+          <span class="badge badge-green mt-1">Free</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">10:00 AM</span><span class="font-semibold text-white">🥞 Brunch — Pancake Pantry or Biscuit Love</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Nashville's two iconic brunch spots. Pancake Pantry (since 1961) for classic stacks; Biscuit Love for trendy Southern biscuits and bonuts. Expect a wait — worth every minute.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 Pancake Pantry: 1796 21st Ave S · Biscuit Love: 316 11th Ave S</p>
+          <div class="flex gap-2 mt-1 flex-wrap">
+            <span class="badge badge-yellow">~$20/person</span>
+            <a href="https://www.google.com/maps/search/Pancake+Pantry+Nashville+TN" target="_blank" rel="noopener" class="badge badge-blue hover:opacity-80">Open in Maps ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">2:00 PM</span><span class="font-semibold text-white">🎵 Country Music Hall of Fame</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">The ultimate country music experience. Book online in advance to skip lines. Plan 2 hours. Rotating exhibits include Elvis, Johnny Cash, and Taylor Swift archives.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 222 Fifth Ave S, Nashville, TN 37203</p>
+          <div class="flex gap-2 mt-1 flex-wrap">
+            <span class="badge badge-yellow">~$30/person</span>
+            <a href="https://www.google.com/maps/search/Country+Music+Hall+of+Fame+Nashville" target="_blank" rel="noopener" class="badge badge-blue hover:opacity-80">Open in Maps ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">4:30 PM</span><span class="font-semibold text-white">🏛️ Parthenon — Centennial Park</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Full-scale replica of the Athens Parthenon. Great outdoor walk before dinner. The interior houses a 42-foot Athena statue. Park entry is free.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 2500 West End Ave, Nashville, TN 37203</p>
+          <div class="flex gap-2 mt-1 flex-wrap">
+            <span class="badge badge-green">Free (park) · $6–10 inside</span>
+            <a href="https://www.google.com/maps/search/Parthenon+Centennial+Park+Nashville" target="_blank" rel="noopener" class="badge badge-blue hover:opacity-80">Open in Maps ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">6:00 PM</span><span class="font-semibold text-white">🍗 Dinner — Hattie B's Hot Chicken (Midtown)</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Nashville's legendary hot chicken. Order one heat level below what you think you can handle — "Damn Hot" is a very different experience than "Medium." The sides (pimento mac, black-eyed pea salad) are elite.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 112 19th Ave S, Nashville, TN 37203</p>
+          <div class="flex gap-2 mt-1 flex-wrap">
+            <span class="badge badge-yellow">~$20/person</span>
+            <a href="https://www.google.com/maps/search/Hattie+B%27s+Hot+Chicken+Nashville+Midtown" target="_blank" rel="noopener" class="badge badge-blue hover:opacity-80">Open in Maps ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">7:30 PM</span><span class="font-semibold text-white">🎵 Honky Tonk Highway — Lower Broadway</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Hit Tootsie's Orchid Lounge, Robert's Western World, Losers Bar, and Legends Corner. Free to enter everywhere — live music at every stop. This is Nashville at its finest.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 Lower Broadway, Nashville, TN 37201</p>
+          <div class="flex gap-2 mt-1 flex-wrap">
+            <span class="badge badge-yellow">~$40–50/person (drinks)</span>
+            <a href="https://www.google.com/maps/search/Lower+Broadway+Nashville+TN" target="_blank" rel="noopener" class="badge badge-blue hover:opacity-80">Open in Maps ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div></div>
+        <div class="pb-1 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">Sunset</span><span class="font-semibold text-white">🌅 Rooftop Bar</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">L.A. Jackson rooftop at Thompson Hotel or Assembly Food Hall for panoramic views of the Cumberland River at golden hour. Stunning backdrop for the group photo.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 L.A. Jackson: 401 11th Ave S, Nashville, TN</p>
+          <span class="badge badge-orange mt-1">Included in Broadway budget</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUNDAY -->
+  <div class="card p-5 mb-4">
+    <div class="flex items-start gap-3 mb-4">
+      <span class="text-3xl">🎷</span>
+      <div class="flex-1">
+        <h3 class="text-lg font-black text-white">Sunday, May 24</h3>
+        <p class="text-orange-400 text-sm font-semibold">Nashville → Memphis — Blues &amp; BBQ</p>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="text-xs" style="color:var(--txt2)">~210 mi drive</div>
+        <div class="text-xs" style="color:var(--txt2)">~$120/person</div>
+      </div>
+    </div>
+    <div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">11:00 AM</span><span class="font-semibold text-white">🚗 Depart Nashville → Memphis</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Check out of hotel. I-40 West, easy 3-hour Sunday drive. Grab a quick coffee before heading out.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">Nashville, TN → Memphis, TN via I-40 W (~210 mi)</p>
+          <span class="badge badge-green mt-1">Free</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">~2:00 PM</span><span class="font-semibold text-white">🏨 Arrive Memphis — Hotel Check-In</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Drop bags at hotel. Book near Downtown to walk to all evening spots.</p>
+          <span class="badge badge-blue mt-1">Hotel: $40/person/night</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">2:30 PM</span><span class="font-semibold text-white">✊ National Civil Rights Museum — Lorraine Motel</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">One of the most powerful museums in America, built at the site where Dr. Martin Luther King Jr. was assassinated on April 4, 1968. Plan 2 full hours. Deeply moving — go in ready to feel it.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 450 Mulberry St, Memphis, TN 38103</p>
+          <div class="flex gap-2 mt-1 flex-wrap">
+            <span class="badge badge-yellow">~$18/person</span>
+            <a href="https://www.google.com/maps/search/National+Civil+Rights+Museum+Memphis+TN" target="_blank" rel="noopener" class="badge badge-blue hover:opacity-80">Open in Maps ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">5:00 PM</span><span class="font-semibold text-white">🎙️ Sun Studio Tour</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Where Elvis, Johnny Cash, Jerry Lee Lewis, and B.B. King recorded. The actual microphone Elvis first sang into is still there. 50-minute guided tour — book in advance.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 706 Union Ave, Memphis, TN 38103</p>
+          <div class="flex gap-2 mt-1 flex-wrap">
+            <span class="badge badge-yellow">~$15/person</span>
+            <a href="https://www.google.com/maps/search/Sun+Studio+Memphis+TN" target="_blank" rel="noopener" class="badge badge-blue hover:opacity-80">Open in Maps ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">7:00 PM</span><span class="font-semibold text-white">🍖 Dinner — Central BBQ</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Memphis-style dry-rub BBQ perfection. Get the ribs, pulled pork, and smoked wings. Multiple locations — the Downtown spot is a quick walk from Beale Street.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 147 E Butler Ave, Memphis, TN 38103 (Downtown)</p>
+          <div class="flex gap-2 mt-1 flex-wrap">
+            <span class="badge badge-yellow">~$25/person</span>
+            <a href="https://www.google.com/maps/search/Central+BBQ+Memphis+Downtown" target="_blank" rel="noopener" class="badge badge-blue hover:opacity-80">Open in Maps ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div></div>
+        <div class="pb-1 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">8:30 PM</span><span class="font-semibold text-white">🎷 Beale Street — Live Blues</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">The home of the blues. Walk the pedestrian strip and hit B.B. King's Blues Club, Rum Boogie Café, and Blues City Café. Free street access; small covers inside venues.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">📍 Beale St, Memphis, TN 38103</p>
+          <div class="flex gap-2 mt-1 flex-wrap">
+            <span class="badge badge-yellow">~$35/person (drinks + covers)</span>
+            <a href="https://www.google.com/maps/search/Beale+Street+Memphis+TN" target="_blank" rel="noopener" class="badge badge-blue hover:opacity-80">Open in Maps ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONDAY -->
+  <div class="card p-5 mb-4">
+    <div class="flex items-start gap-3 mb-4">
+      <span class="text-3xl">🏠</span>
+      <div class="flex-1">
+        <h3 class="text-lg font-black text-white">Monday, May 25 — Memorial Day</h3>
+        <p class="text-orange-400 text-sm font-semibold">Drive Home to Irving</p>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="text-xs" style="color:var(--txt2)">~540 mi</div>
+        <div class="text-xs" style="color:var(--txt2)">~7.5 hrs driving</div>
+      </div>
+    </div>
+    <div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">8:00 AM</span><span class="font-semibold text-white">☕ Breakfast &amp; Check Out</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Last Memphis morning. Grab a coffee and a quick bite near the hotel before hitting the road by 10am.</p>
+          <span class="badge badge-yellow mt-1">~$15/person</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">10:00 AM</span><span class="font-semibold text-white">🚗 Depart Memphis → Irving</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">I-40 West to Little Rock, then I-30 West all the way home. Long haul — rotate drivers and stay energized.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">Memphis, TN → Little Rock, AR → Irving, TX (~540 mi)</p>
+          <span class="badge badge-green mt-1">Free</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="pb-4 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">~1:00 PM</span><span class="font-semibold text-white">🍔 Lunch Stop — Little Rock, AR</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Halfway stretch. Grab lunch, fuel up, and switch drivers for the final Texas leg.</p>
+          <p class="text-xs mt-1" style="color:var(--txt2)">Little Rock, AR</p>
+          <span class="badge badge-yellow mt-1">~$15/person</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <div class="flex flex-col items-center"><div class="tl-dot"></div></div>
+        <div class="pb-1 flex-1">
+          <div class="flex flex-wrap items-baseline gap-2"><span class="text-orange-400 font-bold text-sm">~6:00 PM</span><span class="font-semibold text-white">🎉 Arrive Home — Irving, TX</span></div>
+          <p class="text-sm mt-0.5" style="color:var(--txt2)">Trip complete! Memorial Day weekend for the books. Unpack, relive the stories, settle up on Splitwise.</p>
+          <span class="badge badge-orange mt-1">Priceless 🎉</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-itinerary -->
+
+<!-- ─── MAP ─── -->
+<div id="panel-map" class="tab-panel">
+  <h2 class="text-2xl font-black mb-1" style="color:var(--txt)">Route Map</h2>
+  <p class="text-sm mb-5" style="color:var(--txt2)">Irving TX → Nashville TN → Memphis TN → Irving TX · ~1,540 total miles</p>
+
+  <!--
+    ╔══════════════════════════════════════════════════════════════════╗
+    ║  GOOGLE MAPS API KEY REQUIRED                                    ║
+    ║  1. Go to: https://console.cloud.google.com/apis/credentials     ║
+    ║  2. Create an API key and enable "Maps Embed API"                ║
+    ║  3. Replace YOUR_GOOGLE_MAPS_API_KEY below with your actual key  ║
+    ╚══════════════════════════════════════════════════════════════════╝
+  -->
+  <div class="map-wrap mb-2">
+    <iframe
+      title="Road Trip Route: Irving TX to Nashville TN to Memphis TN"
+      src="https://www.google.com/maps/embed/v1/directions?key=YOUR_GOOGLE_MAPS_API_KEY&origin=Irving,TX&destination=Irving,TX&waypoints=Nashville,TN|Memphis,TN&mode=driving"
+      allowfullscreen
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+  </div>
+  <p class="text-xs mb-6 text-center" style="color:var(--txt2)">⚠️ Add a Google Maps Embed API key in the HTML source to enable the interactive map.</p>
+
+  <h3 class="text-lg font-bold mb-3" style="color:var(--txt)">All Stops</h3>
+  <div class="space-y-2">
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🏁</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Irving, TX — Departure</p>
+        <p class="text-xs" style="color:var(--txt2)">Irving, TX 75063 · Fri May 22, 5:00 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Irving+TX" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🌙</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Little Rock, AR — Midway Stop</p>
+        <p class="text-xs" style="color:var(--txt2)">I-30/I-40 interchange · Fri ~10:00 PM &amp; Mon ~1:00 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Little+Rock+AR" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🥞</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Pancake Pantry / Biscuit Love</p>
+        <p class="text-xs" style="color:var(--txt2)">Nashville, TN · Sat 10:00 AM · Brunch</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Pancake+Pantry+Nashville" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🎵</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Country Music Hall of Fame</p>
+        <p class="text-xs" style="color:var(--txt2)">222 Fifth Ave S, Nashville, TN · Sat 2:00 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Country+Music+Hall+of+Fame+Nashville" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🏛️</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Parthenon — Centennial Park</p>
+        <p class="text-xs" style="color:var(--txt2)">2500 West End Ave, Nashville, TN · Sat 4:30 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Parthenon+Centennial+Park+Nashville" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🍗</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Hattie B's Hot Chicken</p>
+        <p class="text-xs" style="color:var(--txt2)">112 19th Ave S, Nashville, TN · Sat 6:00 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Hattie+B%27s+Hot+Chicken+Nashville" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🎸</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Lower Broadway (Honky Tonk Highway)</p>
+        <p class="text-xs" style="color:var(--txt2)">Lower Broadway, Nashville, TN · Sat 7:30 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Lower+Broadway+Nashville" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">✊</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">National Civil Rights Museum</p>
+        <p class="text-xs" style="color:var(--txt2)">450 Mulberry St, Memphis, TN · Sun 2:30 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/National+Civil+Rights+Museum+Memphis" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🎙️</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Sun Studio</p>
+        <p class="text-xs" style="color:var(--txt2)">706 Union Ave, Memphis, TN · Sun 5:00 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Sun+Studio+Memphis" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🍖</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Central BBQ</p>
+        <p class="text-xs" style="color:var(--txt2)">147 E Butler Ave, Memphis, TN · Sun 7:00 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Central+BBQ+Memphis+Downtown" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🎷</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Beale Street</p>
+        <p class="text-xs" style="color:var(--txt2)">Beale St, Memphis, TN 38103 · Sun 8:30 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Beale+Street+Memphis" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+    <div class="card p-3 flex items-center gap-3">
+      <span class="text-xl flex-shrink-0">🏠</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm" style="color:var(--txt)">Irving, TX — Home</p>
+        <p class="text-xs" style="color:var(--txt2)">Irving, TX 75063 · Mon May 25, ~6:00 PM</p>
+      </div>
+      <a href="https://www.google.com/maps/search/Irving+TX" target="_blank" rel="noopener" class="badge badge-blue text-xs flex-shrink-0">Maps ↗</a>
+    </div>
+
+  </div>
+</div><!-- /panel-map -->
+
+<!-- ─── DRIVE PLAN ─── -->
+<div id="panel-drive" class="tab-panel">
+  <h2 class="text-2xl font-black mb-1" style="color:var(--txt)">Drive Plan</h2>
+  <p class="text-sm mb-1" style="color:var(--txt2)">Driver rotations every 2 hours · 5 drivers · check off completed legs below</p>
+  <p class="text-xs mb-5" style="color:var(--txt2)">Checkboxes save automatically to your browser.</p>
+
+  <!-- LEG 1 -->
+  <div class="card p-4 mb-4">
+    <div class="flex items-center gap-3 mb-3">
+      <label class="cb-row cursor-pointer flex-shrink-0">
+        <input type="checkbox" id="leg1" onchange="saveCheck(this)" />
+      </label>
+      <div>
+        <h3 class="font-black text-white">Leg 1 — Irving TX → Nashville TN</h3>
+        <p class="text-xs" style="color:var(--txt2)">Friday May 22 · Depart 5:00 PM · Arrive ~5:00 AM Sat · ~790 mi · ~10 hrs driving</p>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="t-table">
+        <thead>
+          <tr><th>Shift</th><th>Driver</th><th>Start Time</th><th>End Time</th><th>Approx. Location</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><span class="font-semibold text-orange-400">Kranthi</span></td><td>5:00 PM</td><td>7:00 PM</td><td>Irving TX → East of Dallas</td></tr>
+          <tr><td>2</td><td><span class="font-semibold text-orange-400">Rakshitha</span></td><td>7:00 PM</td><td>9:00 PM</td><td>East TX on I-30</td></tr>
+          <tr><td>3</td><td><span class="font-semibold text-orange-400">Shiva</span></td><td>9:00 PM</td><td>11:00 PM</td><td>Approaching Little Rock AR</td></tr>
+          <tr><td>4</td><td><span class="font-semibold text-orange-400">Priya</span></td><td>11:00 PM</td><td>1:00 AM</td><td>AR → TN on I-40</td></tr>
+          <tr><td>5</td><td><span class="font-semibold text-orange-400">Arjun</span></td><td>1:00 AM</td><td>3:00 AM</td><td>Western Tennessee</td></tr>
+          <tr><td>6</td><td><span class="font-semibold text-orange-400">Kranthi</span></td><td>3:00 AM</td><td>~5:00 AM</td><td>Into Nashville</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LEG 2 -->
+  <div class="card p-4 mb-4">
+    <div class="flex items-center gap-3 mb-3">
+      <label class="cb-row cursor-pointer flex-shrink-0">
+        <input type="checkbox" id="leg2" onchange="saveCheck(this)" />
+      </label>
+      <div>
+        <h3 class="font-black text-white">Leg 2 — Nashville TN → Memphis TN</h3>
+        <p class="text-xs" style="color:var(--txt2)">Sunday May 24 · Depart 11:00 AM · Arrive ~2:00 PM · ~210 mi · ~3 hrs driving</p>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="t-table">
+        <thead>
+          <tr><th>Shift</th><th>Driver</th><th>Start Time</th><th>End Time</th><th>Approx. Location</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><span class="font-semibold text-orange-400">Rakshitha</span></td><td>11:00 AM</td><td>1:00 PM</td><td>Nashville TN → Midway TN</td></tr>
+          <tr><td>2</td><td><span class="font-semibold text-orange-400">Shiva</span></td><td>1:00 PM</td><td>~2:00 PM</td><td>Into Memphis TN</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LEG 3 -->
+  <div class="card p-4 mb-4">
+    <div class="flex items-center gap-3 mb-3">
+      <label class="cb-row cursor-pointer flex-shrink-0">
+        <input type="checkbox" id="leg3" onchange="saveCheck(this)" />
+      </label>
+      <div>
+        <h3 class="font-black text-white">Leg 3 — Memphis TN → Irving TX</h3>
+        <p class="text-xs" style="color:var(--txt2)">Monday May 25 · Depart 10:00 AM · Arrive ~6:00 PM · ~540 mi · ~7.5 hrs driving</p>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="t-table">
+        <thead>
+          <tr><th>Shift</th><th>Driver</th><th>Start Time</th><th>End Time</th><th>Approx. Location</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td><span class="font-semibold text-orange-400">Priya</span></td><td>10:00 AM</td><td>12:00 PM</td><td>Memphis TN → W. Arkansas</td></tr>
+          <tr><td>2</td><td><span class="font-semibold text-orange-400">Arjun</span></td><td>12:00 PM</td><td>2:00 PM</td><td>Little Rock AR area</td></tr>
+          <tr><td>3</td><td><span class="font-semibold text-orange-400">Kranthi</span></td><td>2:00 PM</td><td>4:00 PM</td><td>Northeast Texas on I-30</td></tr>
+          <tr><td>4</td><td><span class="font-semibold text-orange-400">Rakshitha</span></td><td>4:00 PM</td><td>~5:30 PM</td><td>Dallas metro → Irving TX</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card p-4">
+    <h3 class="font-bold mb-2 text-sm" style="color:var(--txt)">Trip Summary</h3>
+    <div class="overflow-x-auto">
+      <table class="t-table">
+        <thead><tr><th>Leg</th><th>Route</th><th>Miles</th><th>Drive Time</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Irving TX → Nashville TN</td><td>~790</td><td>~10 hrs</td></tr>
+          <tr><td>2</td><td>Nashville TN → Memphis TN</td><td>~210</td><td>~3 hrs</td></tr>
+          <tr><td>3</td><td>Memphis TN → Irving TX</td><td>~540</td><td>~7.5 hrs</td></tr>
+          <tr class="hi"><td colspan="2"><strong>Total</strong></td><td><strong>~1,540 mi</strong></td><td><strong>~20.5 hrs</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div><!-- /panel-drive -->
+
+<!-- ─── PACKING LIST ─── -->
+<div id="panel-packing" class="tab-panel">
+  <div class="flex items-center justify-between mb-1">
+    <h2 class="text-2xl font-black" style="color:var(--txt)">Packing List</h2>
+    <button onclick="resetPacking()"
+      class="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors"
+      style="border-color:var(--brd);color:var(--txt2)"
+      onmouseover="this.style.background='rgba(249,115,22,.15)'" onmouseout="this.style.background=''">
+      Reset List
+    </button>
+  </div>
+  <p class="text-sm mb-5" style="color:var(--txt2)">Check items off as you pack. Progress saves automatically.</p>
+
+  <div class="card p-5">
+
+    <!-- Documents -->
+    <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-2 mt-0">📄 Documents</p>
+    <div class="cb-row"><input type="checkbox" id="pk-dl" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Driver's license / state ID</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-ins" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Auto insurance card</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-reg" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Vehicle registration</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-hbk" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Hotel booking confirmations (screenshot or print)</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-ec" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Emergency contacts list (printed backup)</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-hi" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Health insurance card</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-cash" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Cash ($50–100 per person for tips and covers)</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-cc" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Credit / debit cards</span></div>
+
+    <!-- Clothes -->
+    <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-2 mt-5">👕 Clothes</p>
+    <div class="cb-row"><input type="checkbox" id="pk-cl1" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">3 days of casual outfits</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-cl2" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Saturday night going-out outfit (Broadway / Beale)</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-cl3" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Comfortable driving / sleeping clothes</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-cl4" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Rain jacket or light hoodie</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-cl5" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Comfortable walking shoes</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-cl6" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Flip flops / sandals</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-cl7" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Sunglasses</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-cl8" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Hat or cap</span></div>
+
+    <!-- Car Essentials -->
+    <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-2 mt-5">🚗 Car Essentials</p>
+    <div class="cb-row"><input type="checkbox" id="pk-ce1" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Phone chargers (enough for all 5 phones)</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-ce2" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Car phone mount</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-ce3" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Aux cable or Bluetooth adapter</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-ce4" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">First aid kit</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-ce5" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Jumper cables</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-ce6" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Verify spare tire + jack in vehicle</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-ce7" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Road flares / safety triangles</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-ce8" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Paper towels and wet wipes</span></div>
+
+    <!-- Snacks -->
+    <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-2 mt-5">🍿 Snacks &amp; Drinks</p>
+    <div class="cb-row"><input type="checkbox" id="pk-sn1" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Refillable water bottles (one per person)</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-sn2" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Cooler with ice for drinks</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-sn3" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Road snacks: chips, nuts, granola bars, jerky</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-sn4" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Candy and gummies (for overnight leg)</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-sn5" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Coffee, Red Bull, or energy drinks</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-sn6" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Gum and mints (night driving survival)</span></div>
+
+    <!-- Tech -->
+    <p class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-2 mt-5">📱 Tech</p>
+    <div class="cb-row"><input type="checkbox" id="pk-tc1" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Fully charged phone + charger</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-tc2" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Portable battery banks (at least 2)</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-tc3" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Earbuds or headphones</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-tc4" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Camera or GoPro + charger</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-tc5" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Spotify / Apple Music playlist saved offline</span></div>
+    <div class="cb-row"><input type="checkbox" id="pk-tc6" class="pack-item" onchange="saveCheck(this)"><span class="text-sm" style="color:var(--txt)">Google Maps route saved offline</span></div>
+
+  </div>
+</div><!-- /panel-packing -->
+
+<!-- ─── BUDGET ─── -->
+<div id="panel-budget" class="tab-panel">
+  <h2 class="text-2xl font-black mb-1" style="color:var(--txt)">Budget Estimate</h2>
+  <p class="text-sm mb-5" style="color:var(--txt2)">Estimated costs per person · 5 people · Memorial Day Weekend 2026</p>
+
+  <div class="card overflow-hidden mb-4">
+    <div class="overflow-x-auto">
+      <table class="t-table">
+        <thead>
+          <tr>
+            <th>Expense</th>
+            <th class="text-right">Group Total</th>
+            <th class="text-right">Per Person (÷5)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <p class="font-semibold" style="color:var(--txt)">⛽ Gas</p>
+              <p class="text-xs mt-0.5" style="color:var(--txt2)">Irving↔Nashville + Nashville↔Memphis + stops</p>
+            </td>
+            <td class="text-right font-semibold" style="color:var(--txt)">$300</td>
+            <td class="text-right font-semibold text-orange-400">$60</td>
+          </tr>
+          <tr>
+            <td>
+              <p class="font-semibold" style="color:var(--txt)">🏨 Hotel — Nashville</p>
+              <p class="text-xs mt-0.5" style="color:var(--txt2)">1 night · Sat May 23 · ~$200/night total</p>
+            </td>
+            <td class="text-right font-semibold" style="color:var(--txt)">$200</td>
+            <td class="text-right font-semibold text-orange-400">$40</td>
+          </tr>
+          <tr>
+            <td>
+              <p class="font-semibold" style="color:var(--txt)">🏨 Hotel — Memphis</p>
+              <p class="text-xs mt-0.5" style="color:var(--txt2)">1 night · Sun May 24 · ~$200/night total</p>
+            </td>
+            <td class="text-right font-semibold" style="color:var(--txt)">$200</td>
+            <td class="text-right font-semibold text-orange-400">$40</td>
+          </tr>
+          <tr>
+            <td>
+              <p class="font-semibold" style="color:var(--txt)">🍔 Food &amp; Drinks</p>
+              <p class="text-xs mt-0.5" style="color:var(--txt2)">All meals, drinks, covers, nightlife (Sat + Sun)</p>
+            </td>
+            <td class="text-right font-semibold" style="color:var(--txt)">$750</td>
+            <td class="text-right font-semibold text-orange-400">$150</td>
+          </tr>
+          <tr>
+            <td>
+              <p class="font-semibold" style="color:var(--txt)">🎟️ Attractions</p>
+              <p class="text-xs mt-0.5" style="color:var(--txt2)">CMHOF · Parthenon · Civil Rights Museum · Sun Studio</p>
+            </td>
+            <td class="text-right font-semibold" style="color:var(--txt)">$400</td>
+            <td class="text-right font-semibold text-orange-400">$80</td>
+          </tr>
+          <tr>
+            <td>
+              <p class="font-semibold" style="color:var(--txt)">🎲 Miscellaneous</p>
+              <p class="text-xs mt-0.5" style="color:var(--txt2)">Parking, tips, souvenirs, tolls, unexpected</p>
+            </td>
+            <td class="text-right font-semibold" style="color:var(--txt)">$250</td>
+            <td class="text-right font-semibold text-orange-400">$50</td>
+          </tr>
+          <tr class="hi">
+            <td class="text-base">💰 <strong>TOTAL ESTIMATE</strong></td>
+            <td class="text-right text-base"><strong>$2,100</strong></td>
+            <td class="text-right text-base text-orange-400"><strong>$420/person</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Breakdown cards -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+    <div class="card p-3 text-center"><div class="text-2xl font-black text-orange-400">$60</div><div class="text-xs mt-1" style="color:var(--txt2)">Gas</div></div>
+    <div class="card p-3 text-center"><div class="text-2xl font-black text-orange-400">$80</div><div class="text-xs mt-1" style="color:var(--txt2)">Hotels</div></div>
+    <div class="card p-3 text-center"><div class="text-2xl font-black text-orange-400">$150</div><div class="text-xs mt-1" style="color:var(--txt2)">Food &amp; Drinks</div></div>
+    <div class="card p-3 text-center"><div class="text-2xl font-black text-orange-400">$80</div><div class="text-xs mt-1" style="color:var(--txt2)">Attractions</div></div>
+    <div class="card p-3 text-center"><div class="text-2xl font-black text-orange-400">$50</div><div class="text-xs mt-1" style="color:var(--txt2)">Misc</div></div>
+    <div class="card p-3 text-center" style="border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.08)"><div class="text-2xl font-black text-orange-400">$420</div><div class="text-xs mt-1 font-bold text-orange-400">Total / Person</div></div>
+  </div>
+
+  <div class="card p-4 flex gap-3 items-start">
+    <span class="text-xl flex-shrink-0">💡</span>
+    <div>
+      <p class="text-sm font-semibold mb-1" style="color:var(--txt)">Track real expenses in Splitwise</p>
+      <p class="text-sm" style="color:var(--txt2)">These are estimates. Use Splitwise to log actual receipts as you go — whoever pays can add the expense and split it evenly. Settle up at the end of the trip. Download the app before you leave.</p>
+    </div>
+  </div>
+</div><!-- /panel-budget -->
+
+<!-- ─── CONTACTS ─── -->
+<div id="panel-contacts" class="tab-panel">
+  <h2 class="text-2xl font-black mb-1" style="color:var(--txt)">Contacts</h2>
+  <p class="text-sm mb-5" style="color:var(--txt2)">5 travelers · update phone numbers before sharing this dashboard</p>
+
+  <h3 class="text-base font-bold mb-3" style="color:var(--txt)">👥 The Crew</h3>
+  <div class="space-y-3 mb-6">
+
+    <div class="card p-4 flex gap-3 items-start">
+      <div class="avatar" style="background:linear-gradient(135deg,#F97316,#DC2626)">K</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <p class="font-black" style="color:var(--txt)">Kranthi</p>
+          <span class="badge badge-orange text-xs">Driver</span>
+        </div>
+        <p class="text-sm mt-0.5" style="color:var(--txt2)">📞 (940) 299-4787</p>
+        <p class="text-xs mt-1" style="color:var(--txt2)">🚗 <strong>Shifts:</strong> Fri 5–7 PM · Fri 3–5 AM · Mon 2–4 PM</p>
+        <p class="text-xs mt-0.5" style="color:var(--txt2)">🍽️ No dietary restrictions</p>
+      </div>
+    </div>
+
+    <div class="card p-4 flex gap-3 items-start">
+      <div class="avatar" style="background:linear-gradient(135deg,#3B82F6,#6366F1)">R</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <p class="font-black" style="color:var(--txt)">Rakshitha</p>
+          <span class="badge badge-orange text-xs">Driver</span>
+        </div>
+        <p class="text-sm mt-0.5" style="color:var(--txt2)">📞 (940) 293-7756</p>
+        <p class="text-xs mt-1" style="color:var(--txt2)">🚗 <strong>Shifts:</strong> Fri 7–9 PM · Sun 11 AM–1 PM · Mon 4–5:30 PM</p>
+        <p class="text-xs mt-0.5" style="color:var(--txt2)">🍽️ No dietary restrictions</p>
+      </div>
+    </div>
+
+    <div class="card p-4 flex gap-3 items-start">
+      <div class="avatar" style="background:linear-gradient(135deg,#10B981,#0891B2)">S</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <p class="font-black" style="color:var(--txt)">Shiva</p>
+          <span class="badge badge-orange text-xs">Driver</span>
+        </div>
+        <p class="text-sm mt-0.5" style="color:var(--txt2)">📞 (317) 324-6171</p>
+        <p class="text-xs mt-1" style="color:var(--txt2)">🚗 <strong>Shifts:</strong> Fri 9–11 PM · Sun 1–2 PM · Mon 10 AM–12 PM</p>
+        <p class="text-xs mt-0.5" style="color:var(--txt2)">🍽️ No dietary restrictions</p>
+      </div>
+    </div>
+
+    <div class="card p-4 flex gap-3 items-start">
+      <div class="avatar" style="background:linear-gradient(135deg,#8B5CF6,#EC4899)">P</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <p class="font-black" style="color:var(--txt)">Priya Nair</p>
+          <span class="badge badge-orange text-xs">Driver</span>
+        </div>
+        <p class="text-sm mt-0.5" style="color:var(--txt2)">📞 (512) 555-0194</p>
+        <p class="text-xs mt-1" style="color:var(--txt2)">🚗 <strong>Shifts:</strong> Fri 11 PM–1 AM · Mon 10 AM–12 PM</p>
+        <p class="text-xs mt-0.5" style="color:var(--txt2)">🍽️ No dietary restrictions</p>
+      </div>
+    </div>
+
+    <div class="card p-4 flex gap-3 items-start">
+      <div class="avatar" style="background:linear-gradient(135deg,#F59E0B,#EF4444)">A</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <p class="font-black" style="color:var(--txt)">Arjun Patel</p>
+          <span class="badge badge-orange text-xs">Driver</span>
+        </div>
+        <p class="text-sm mt-0.5" style="color:var(--txt2)">📞 (469) 555-0237</p>
+        <p class="text-xs mt-1" style="color:var(--txt2)">🚗 <strong>Shifts:</strong> Fri 1–3 AM · Mon 12–2 PM</p>
+        <p class="text-xs mt-0.5" style="color:var(--txt2)">🍽️ No dietary restrictions</p>
+      </div>
+    </div>
+
+  </div>
+
+  <h3 class="text-base font-bold mb-3" style="color:var(--txt)">🏨 Hotels</h3>
+  <div class="space-y-2 mb-6">
+    <div class="card p-3 flex gap-3 items-start">
+      <span class="text-xl">🏨</span>
+      <div>
+        <p class="font-semibold text-sm" style="color:var(--txt)">Nashville Hotel</p>
+        <p class="text-xs" style="color:var(--txt2)">TBD — add after booking · Sat May 23 check-in</p>
+        <p class="text-xs mt-0.5 text-orange-400">→ Update this with hotel name, address, and phone</p>
+      </div>
+    </div>
+    <div class="card p-3 flex gap-3 items-start">
+      <span class="text-xl">🏨</span>
+      <div>
+        <p class="font-semibold text-sm" style="color:var(--txt)">Memphis Hotel</p>
+        <p class="text-xs" style="color:var(--txt2)">TBD — add after booking · Sun May 24 check-in</p>
+        <p class="text-xs mt-0.5 text-orange-400">→ Update this with hotel name, address, and phone</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="text-base font-bold mb-3" style="color:var(--txt)">🚨 Emergency Contacts</h3>
+  <div class="card overflow-hidden">
+    <table class="t-table">
+      <thead><tr><th>Service</th><th>Number</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="font-semibold" style="color:var(--txt)">🆘 Emergency</td>
+          <td class="text-orange-400 font-bold">911</td>
+          <td class="text-xs" style="color:var(--txt2)">Any state</td>
+        </tr>
+        <tr>
+          <td class="font-semibold" style="color:var(--txt)">🚗 AAA Roadside</td>
+          <td><a href="tel:18002224357" class="text-orange-400 font-bold">1-800-222-4357</a></td>
+          <td class="text-xs" style="color:var(--txt2)">24/7 · flat tire, tow, lockout</td>
+        </tr>
+        <tr>
+          <td class="font-semibold" style="color:var(--txt)">☠️ Poison Control</td>
+          <td><a href="tel:18002221222" class="text-orange-400 font-bold">1-800-222-1222</a></td>
+          <td class="text-xs" style="color:var(--txt2)">National 24/7</td>
+        </tr>
+        <tr>
+          <td class="font-semibold" style="color:var(--txt)">🏥 Vanderbilt Medical (Nashville)</td>
+          <td><a href="tel:16153225000" class="text-orange-400 font-bold">(615) 322-5000</a></td>
+          <td class="text-xs" style="color:var(--txt2)">1211 Medical Center Dr</td>
+        </tr>
+        <tr>
+          <td class="font-semibold" style="color:var(--txt)">🏥 Regional One (Memphis)</td>
+          <td><a href="tel:19015457100" class="text-orange-400 font-bold">(901) 545-7100</a></td>
+          <td class="text-xs" style="color:var(--txt2)">877 Jefferson Ave</td>
+        </tr>
+        <tr>
+          <td class="font-semibold" style="color:var(--txt)">🚔 Nashville Police (non-emergency)</td>
+          <td><a href="tel:16158628600" class="text-orange-400 font-bold">(615) 862-8600</a></td>
+          <td class="text-xs" style="color:var(--txt2)">Non-emergency only</td>
+        </tr>
+        <tr>
+          <td class="font-semibold" style="color:var(--txt)">🚔 Memphis Police (non-emergency)</td>
+          <td><a href="tel:19015452677" class="text-orange-400 font-bold">(901) 545-2677</a></td>
+          <td class="text-xs" style="color:var(--txt2)">Non-emergency only</td>
+        </tr>
+        <tr>
+          <td class="font-semibold" style="color:var(--txt)">🛣️ TN Highway Patrol</td>
+          <td class="text-orange-400 font-bold">*847</td>
+          <td class="text-xs" style="color:var(--txt2)">From any mobile in Tennessee</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /panel-contacts -->
+
+</main>
+
+<!-- ════════ FOOTER ════════ -->
+<footer class="max-w-3xl mx-auto px-4 py-6 mt-2 border-t" style="border-color:var(--brd)">
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div>
+      <p class="text-xs" style="color:var(--txt2)">🚗 Road Trip 2026 · Irving TX → Nashville → Memphis</p>
+      <p class="text-xs mt-0.5" style="color:var(--txt2)">Last updated: <span id="lastUpdated"></span></p>
+    </div>
+    <button onclick="shareTrip()"
+      class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors text-white"
+      style="background:var(--acc)"
+      onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+      🔗 Share This Dashboard
+    </button>
+  </div>
+</footer>
+
+<!-- Toast notification -->
+<div id="toast">✓ Link copied to clipboard!</div>
+
+<!-- ════════ JAVASCRIPT ════════ -->
+<script>
+  /* ─── Countdown ─── */
+  // Departure: Friday May 22, 2026 at 6:00 PM Central Daylight Time (UTC-5)
+  const DEPARTURE = new Date('2026-05-22T18:00:00-05:00');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = DEPARTURE - now;
+
+    if (diff <= 0) {
+      // We're on the road or the trip has passed
+      const tripEnd = new Date('2026-05-25T18:00:00-05:00');
+      if (now < tripEnd) {
+        document.getElementById('cdD').textContent = '🚗';
+        document.getElementById('cdH').textContent = '🎸';
+        document.getElementById('cdM').textContent = '🎷';
+        document.getElementById('cdS').textContent = '🍗';
+        document.querySelector('.cd-box + .cd-box + .cd-box + .cd-box + p');
+        const label = document.querySelector('p.text-xs.text-slate-500');
+        if (label) label.textContent = "We're on the road! 🚗💨";
+      } else {
+        ['cdD','cdH','cdM','cdS'].forEach(id => document.getElementById(id).textContent = '00');
+      }
+      return;
+    }
+
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000)  / 60000);
+    const secs  = Math.floor((diff % 60000)    / 1000);
+
+    document.getElementById('cdD').textContent = pad(days);
+    document.getElementById('cdH').textContent = pad(hours);
+    document.getElementById('cdM').textContent = pad(mins);
+    document.getElementById('cdS').textContent = pad(secs);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ─── Tabs ─── */
+  const TAB_IDS = ['itinerary','map','drive','packing','budget','contacts'];
+
+  function switchTab(name) {
+    TAB_IDS.forEach(id => {
+      document.getElementById('panel-' + id).classList.remove('active');
+      document.getElementById('t-' + id).classList.remove('active');
+    });
+    document.getElementById('panel-' + name).classList.add('active');
+    document.getElementById('t-' + name).classList.add('active');
+    localStorage.setItem('rt_tab', name);
+    // Scroll tab button into view on mobile
+    const btn = document.getElementById('t-' + name);
+    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  /* ─── Theme ─── */
+  function toggleTheme() {
+    const body = document.getElementById('B');
+    const html = document.documentElement;
+    const isLight = body.classList.contains('light');
+    if (isLight) {
+      body.classList.remove('light');
+      html.classList.add('dark');
+      document.getElementById('themeIcon').textContent = '☀️';
+      localStorage.setItem('rt_theme', 'dark');
+    } else {
+      body.classList.add('light');
+      html.classList.remove('dark');
+      document.getElementById('themeIcon').textContent = '🌙';
+      localStorage.setItem('rt_theme', 'light');
+    }
+  }
+
+  /* ─── Checkbox persistence ─── */
+  function saveCheck(el) {
+    const stored = JSON.parse(localStorage.getItem('rt_checks') || '{}');
+    stored[el.id] = el.checked;
+    localStorage.setItem('rt_checks', JSON.stringify(stored));
+  }
+
+  function loadChecks() {
+    const stored = JSON.parse(localStorage.getItem('rt_checks') || '{}');
+    Object.keys(stored).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.checked = stored[id];
+    });
+  }
+
+  /* ─── Reset packing list ─── */
+  function resetPacking() {
+    if (!confirm('Reset all packing list checkboxes?')) return;
+    const stored = JSON.parse(localStorage.getItem('rt_checks') || '{}');
+    document.querySelectorAll('.pack-item').forEach(cb => {
+      cb.checked = false;
+      delete stored[cb.id];
+    });
+    localStorage.setItem('rt_checks', JSON.stringify(stored));
+  }
+
+  /* ─── Share button ─── */
+  function shareTrip() {
+    const url = window.location.href;
+    const showToast = () => {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(showToast).catch(() => fallbackCopy(url, showToast));
+    } else {
+      fallbackCopy(url, showToast);
+    }
+  }
+
+  function fallbackCopy(text, cb) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(el);
+    el.focus(); el.select();
+    try { document.execCommand('copy'); cb(); } catch(e) {}
+    document.body.removeChild(el);
+  }
+
+  /* ─── Footer timestamp ─── */
+  document.getElementById('lastUpdated').textContent =
+    new Date().toLocaleDateString('en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+
+  /* ─── Init from localStorage ─── */
+  (function init() {
+    // Theme
+    const savedTheme = localStorage.getItem('rt_theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.getElementById('B').classList.add('light');
+      document.documentElement.classList.remove('dark');
+      document.getElementById('themeIcon').textContent = '🌙';
+    }
+
+    // Active tab
+    const savedTab = localStorage.getItem('rt_tab') || 'itinerary';
+    switchTab(savedTab);
+
+    // Checkboxes
+    loadChecks();
+  })();
+</script>
+</body>
+</html>
